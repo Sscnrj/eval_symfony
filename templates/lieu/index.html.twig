@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lieu index{% endblock %}
+
+{% block body %}
+    <h1>Lieu index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for lieu in lieux %}
+            <tr>
+                <td>{{ lieu.Nom }}</td>
+                <td>
+                    <a href="{{ path('app_lieu_edit', {'id': lieu.id}) }}" class="btn btn-primary">Modifier</a>
+                    {{ include('lieu/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">Aucun lieu trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_lieu_new') }}" class="btn btn-primary">Créer</a>
+{% endblock %}

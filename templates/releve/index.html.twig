@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Releve index{% endblock %}
+
+{% block body %}
+    <h1>Releve index</h1>
+
+    <style>
+        .sudoku-grid {
+            border-collapse: collapse;
+        }
+
+        .sudoku-grid td {
+            border: 1px solid #000;
+            padding: 5px;
+            text-align: center; /* Centrer le texte dans chaque cellule */
+        }
+
+        .green-cell {
+            background-color: #00FF00; /* Couleur verte */
+        }
+    </style>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Lieu</th>
+            <th>ReleveBrut</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for releve in releves %}
+            <tr>
+                <td>{{ releve.Date ? releve.Date|date('Y-m-d') : '' }}</td>
+                <td>{{ releve.Lieu.nom }}</td>
+                <td>{{ releve.ReleveBrut }}</td>
+                <td>
+                    {% set rawReleveArray = releve.ReleveBrut|split('/') %}
+                    <table class="sudoku-grid">
+                        {% for row in 1..3 %}
+                            <tr>
+                                {% for col in 1..3 %}
+                                    {% set index = (row - 1) * 3 + col - 1 %}
+                                    <td>{{ rawReleveArray[index] }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td>
+                    {% set rawReleveArray = releve.ReleveBrut|split('/') %}
+                    <table class="sudoku-grid">
+                        {% for bigRow in 1..3 %}
+                            <tr>
+                                {% for bigCol in 1..3 %}
+                                    {% set index = (bigRow - 1) * 3 + bigCol - 1 %}
+                                    <td>
+                                        <table class="sub-grid">
+                                            {% for smallRow in 1..3 %}
+                                                <tr>
+                                                    {% for smallCol in 1..3 %}
+                                                        {% set smallIndex = (smallRow - 1) * 3 + smallCol - 1 %}
+                                                        {% set isGreen = rawReleveArray[index] >= (smallIndex + 1) %}
+                                                        <td {% if isGreen %}class="green-cell"{% endif %}></td>
+                                                    {% endfor %}
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td>
+                    <a href="{{ path('app_releve_edit', {'id': releve.id}) }}" class="btn btn-primary">Modifier</a>
+                    {{ include('releve/_delete_form.html.twig') }}
+
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_releve_new') }}" class="btn btn-success">Ajouter un relevé</a>
+    <a href="{{ path('app_lieu_index') }}" class="btn btn-warning">Gérer les lieux</a>
+
+
+
+{% endblock %}
